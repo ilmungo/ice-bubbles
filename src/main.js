@@ -3,20 +3,22 @@ import { renderStaves } from './staffDisplay.js';
 import { setupImageOverlay } from './imageOverlay.js';
 import { attachNoteMarkers } from './noteMarkers.js';
 import { attachScrubber } from './scrubber.js';
-import { play, pause, isPlaying, audioContextState } from './playback.js';
+import { play, pause, isPlaying, setDuration, durationForSpeedValue } from './playback.js';
 import { detectBubbles } from './bubbleDetector.js';
 
 document.querySelector('#app').innerHTML = `
   <div class="app">
+    <div id="staff"></div>
     <div class="controls">
       <input type="file" id="image-input" accept="image/*" />
       <button id="detect-bubbles" type="button">Detect Bubbles</button>
       <label id="sensitivity-label" for="sensitivity">Sensitivity <span id="sensitivity-value">50</span></label>
       <input type="range" id="sensitivity" min="0" max="100" value="50" />
       <button id="play-pause" type="button">Play</button>
+      <label id="speed-label" for="speed">Speed</label>
+      <input type="range" id="speed" min="0" max="100" value="50" />
       <span id="status"></span>
     </div>
-    <div id="staff"></div>
   </div>
 `;
 
@@ -31,6 +33,7 @@ const playButton = document.querySelector('#play-pause');
 const detectButton = document.querySelector('#detect-bubbles');
 const sensitivitySlider = document.querySelector('#sensitivity');
 const sensitivityValue = document.querySelector('#sensitivity-value');
+const speedSlider = document.querySelector('#speed');
 const statusEl = document.querySelector('#status');
 
 function runDetection() {
@@ -57,6 +60,10 @@ sensitivitySlider.addEventListener('input', () => {
   if (getImage()) runDetection();
 });
 
+speedSlider.addEventListener('input', () => {
+  setDuration(durationForSpeedValue(Number(speedSlider.value)));
+});
+
 playButton.addEventListener('click', () => {
   if (isPlaying()) {
     pause();
@@ -77,14 +84,9 @@ playButton.addEventListener('click', () => {
       playButton.textContent = 'Play';
       setScrubberFraction(null);
     },
-    onError: (err) => {
+    onError: () => {
       playButton.textContent = 'Play';
       setScrubberFraction(null);
-      statusEl.textContent = `Error: ${err?.message ?? err}`;
     },
   });
-
-  setTimeout(() => {
-    statusEl.textContent = `audio: ${audioContextState()}, notes: ${notes.length}`;
-  }, 200);
 });

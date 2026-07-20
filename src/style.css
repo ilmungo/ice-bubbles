@@ -74,8 +74,6 @@ body {
 
 .note-marker {
   position: absolute;
-  width: 26px;
-  height: 26px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 55%, rgba(255, 255, 255, 0) 100%);
@@ -83,8 +81,7 @@ body {
 
 .note-marker-ledger {
   position: absolute;
-  width: 38px;
   height: 2px;
-  background: #000;
+  background: #fff;
   transform: translate(-50%, -50%);
 }

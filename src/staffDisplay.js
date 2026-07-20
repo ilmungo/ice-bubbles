@@ -33,14 +33,16 @@ export function renderStaves(container) {
   const context = renderer.getContext();
   context.scale(SCALE, SCALE);
 
+  let spaceHeight;
   const staves = CLEFS.map((clef, index) => {
     const stave = new Stave(STAVE_X, FIRST_STAVE_Y + index * STAVE_SPACING, STAVE_WIDTH);
     stave.addClef(clef);
     stave.setContext(context).draw();
+    spaceHeight = stave.getSpacingBetweenLines() * SCALE;
     return staveGeometry(stave);
   });
 
-  return { nativeWidth, nativeHeight, staves };
+  return { nativeWidth, nativeHeight, spaceHeight, staves };
 }
 
 // Coordinates below are in "native" pixel space — i.e. already multiplied

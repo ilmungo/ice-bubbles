@@ -22,11 +22,14 @@ export function attachNoteMarkers(staffContainer, geometry) {
     const step = stave.stepAt(nativeY);
     const left = `${box.offsetLeft + nativeX * box.scale}px`;
     const top = `${box.offsetTop + stave.yForStep(step) * box.scale}px`;
+    const noteheadSize = geometry.spaceHeight * box.scale;
 
     const marker = document.createElement('div');
     marker.className = 'note-marker';
     marker.style.left = left;
     marker.style.top = top;
+    marker.style.width = `${noteheadSize}px`;
+    marker.style.height = `${noteheadSize}px`;
     layer.appendChild(marker);
 
     if (isLedgerStep(step)) {
@@ -34,6 +37,7 @@ export function attachNoteMarkers(staffContainer, geometry) {
       ledger.className = 'note-marker-ledger';
       ledger.style.left = left;
       ledger.style.top = top;
+      ledger.style.width = `${noteheadSize * 1.5}px`;
       layer.appendChild(ledger);
     }
   };

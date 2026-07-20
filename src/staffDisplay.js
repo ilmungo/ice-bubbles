@@ -6,7 +6,8 @@ const CLEFS = ['treble', 'alto', 'bass'];
 const STAVE_X = 20;
 const STAVE_WIDTH = 700;
 const FIRST_STAVE_Y = 40;
-const STAVE_SPACING = 140;
+const STAVE_SPACING = 100;
+const SCALE = 1.3;
 
 export function renderStaves(container) {
   container.innerHTML = '';
@@ -15,8 +16,9 @@ export function renderStaves(container) {
   const height = FIRST_STAVE_Y + STAVE_SPACING * (CLEFS.length - 1) + 100;
 
   const renderer = new Renderer(container, Renderer.Backends.SVG);
-  renderer.resize(width, height);
+  renderer.resize(width * SCALE, height * SCALE);
   const context = renderer.getContext();
+  context.scale(SCALE, SCALE);
 
   CLEFS.forEach((clef, index) => {
     const stave = new Stave(STAVE_X, FIRST_STAVE_Y + index * STAVE_SPACING, STAVE_WIDTH);

@@ -48,6 +48,16 @@ export function play(notes, { onProgress, onDone, onError, isMuted } = {}) {
     try {
       await Tone.start();
 
+      // iOS Safari defaults Web Audio content to the "ambient" audio
+      // session category, which routes fine to Bluetooth/headphones but
+      // not reliably to the built-in speaker (independent of the mute
+      // switch — headphone routing bypasses that entirely). Explicitly
+      // requesting "playback" fixes it; feature-detected since this API
+      // is Safari-specific and only on newer iOS versions.
+      if (navigator.audioSession) {
+        navigator.audioSession.type = 'playback';
+      }
+
       if (needsRebuild) {
         part?.dispose();
         part = new Tone.Part((time, note) => {

@@ -1,10 +1,13 @@
 const MAX_INITIAL_SIZE = 320;
 const MIN_SIZE = 30;
+const TAP_THRESHOLD_PX = 6;
 
 // A single loaded image floats in a fixed, full-viewport layer above
 // everything else, draggable by its body and resizable (aspect-locked) via
 // a corner handle. Loading a new image replaces whatever was there before.
-export function setupImageOverlay(fileInput) {
+// A drag that never moves past TAP_THRESHOLD_PX is treated as a tap and
+// reported via onTap instead of repositioning the image.
+export function setupImageOverlay(fileInput, { onTap } = {}) {
   const layer = document.createElement('div');
   layer.id = 'image-overlay-layer';
   document.body.appendChild(layer);
@@ -13,13 +16,13 @@ export function setupImageOverlay(fileInput) {
     const file = fileInput.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => addImage(layer, reader.result);
+    reader.onload = () => addImage(layer, reader.result, onTap);
     reader.readAsDataURL(file);
     fileInput.value = '';
   });
 }
 
-function addImage(layer, src) {
+function addImage(layer, src, onTap) {
   layer.innerHTML = '';
 
   const wrapper = document.createElement('div');
@@ -46,18 +49,49 @@ function addImage(layer, src) {
     wrapper.style.top = `${(window.innerHeight - height) / 2}px`;
   });
 
-  makeDraggable(wrapper);
+  makeDraggable(wrapper, onTap);
   makeResizable(wrapper, handle);
 }
 
-function dragBy(element, onMove) {
-  element.addEventListener('pointerdown', (event) => {
+function makeDraggable(wrapper, onTap) {
+  wrapper.addEventListener('pointerdown', (event) => {
     event.preventDefault();
     const startX = event.clientX;
     const startY = event.clientY;
+    const startLeft = wrapper.offsetLeft;
+    const startTop = wrapper.offsetTop;
+    let moved = false;
 
     function handleMove(moveEvent) {
-      onMove(moveEvent.clientX - startX, moveEvent.clientY - startY);
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+      if (Math.hypot(deltaX, deltaY) > TAP_THRESHOLD_PX) moved = true;
+      wrapper.style.left = `${startLeft + deltaX}px`;
+      wrapper.style.top = `${startTop + deltaY}px`;
+    }
+    function handleUp(upEvent) {
+      window.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('pointerup', handleUp);
+      if (!moved) onTap?.(upEvent.clientX, upEvent.clientY);
+    }
+    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointerup', handleUp);
+  });
+}
+
+function makeResizable(wrapper, handle) {
+  handle.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const startX = event.clientX;
+    const startWidth = wrapper.offsetWidth;
+    const startHeight = wrapper.offsetHeight;
+    const aspect = startWidth / startHeight;
+
+    function handleMove(moveEvent) {
+      const newWidth = Math.max(MIN_SIZE, startWidth + (moveEvent.clientX - startX));
+      wrapper.style.width = `${newWidth}px`;
+      wrapper.style.height = `${newWidth / aspect}px`;
     }
     function handleUp() {
       window.removeEventListener('pointermove', handleMove);
@@ -65,30 +99,5 @@ function dragBy(element, onMove) {
     }
     window.addEventListener('pointermove', handleMove);
     window.addEventListener('pointerup', handleUp);
-  });
-}
-
-function makeDraggable(wrapper) {
-  dragBy(wrapper, (deltaX, deltaY) => {
-    wrapper.style.left = `${wrapper._startLeft + deltaX}px`;
-    wrapper.style.top = `${wrapper._startTop + deltaY}px`;
-  });
-  wrapper.addEventListener('pointerdown', () => {
-    wrapper._startLeft = wrapper.offsetLeft;
-    wrapper._startTop = wrapper.offsetTop;
-  });
-}
-
-function makeResizable(wrapper, handle) {
-  dragBy(handle, (deltaX) => {
-    const newWidth = Math.max(MIN_SIZE, wrapper._startWidth + deltaX);
-    const newHeight = newWidth / wrapper._startAspect;
-    wrapper.style.width = `${newWidth}px`;
-    wrapper.style.height = `${newHeight}px`;
-  });
-  handle.addEventListener('pointerdown', (event) => {
-    event.stopPropagation();
-    wrapper._startWidth = wrapper.offsetWidth;
-    wrapper._startAspect = wrapper.offsetWidth / wrapper.offsetHeight;
   });
 }

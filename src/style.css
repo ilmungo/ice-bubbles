@@ -12,6 +12,10 @@ body {
   max-width: 100%;
 }
 
+#staff {
+  position: relative;
+}
+
 #staff svg {
   display: block;
   max-width: 100%;
@@ -26,6 +30,7 @@ body {
 #image-overlay-layer {
   position: fixed;
   inset: 0;
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -53,4 +58,28 @@ body {
   background: #333;
   border: 2px solid #fff;
   cursor: nwse-resize;
+}
+
+.note-marker-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.note-marker {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 55%, rgba(255, 255, 255, 0) 100%);
+}
+
+.note-marker-ledger {
+  position: absolute;
+  width: 38px;
+  height: 2px;
+  background: #000;
+  transform: translate(-50%, -50%);
 }

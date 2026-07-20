@@ -20,6 +20,10 @@ export function setupImageOverlay(fileInput, { onTap } = {}) {
     reader.readAsDataURL(file);
     fileInput.value = '';
   });
+
+  return {
+    getImage: () => layer.querySelector('.overlay-image'),
+  };
 }
 
 function addImage(layer, src, onTap) {

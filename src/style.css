@@ -29,7 +29,8 @@ body {
   margin-bottom: 1.5rem;
 }
 
-#play-pause {
+#play-pause,
+#detect-bubbles {
   font: inherit;
   padding: 0.4rem 1.25rem;
   border-radius: 8px;

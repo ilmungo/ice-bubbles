@@ -11,7 +11,10 @@ export function attachNoteMarkers(staffContainer, geometry) {
 
   const placed = [];
 
-  function placeMarkerAtPoint(clientX, clientY) {
+  // `toggle: true` (manual taps) removes an already-placed bubble at the
+  // same snapped spot; `toggle: false` (auto-detection) leaves it alone so
+  // detection never undoes a note that's already there.
+  function placeMarkerAtPoint(clientX, clientY, { toggle = true } = {}) {
     const box = contentBox(staffContainer, geometry);
     const nativeX = (clientX - box.contentLeft) / box.scale;
     const nativeY = (clientY - box.contentTop) / box.scale;
@@ -28,6 +31,7 @@ export function attachNoteMarkers(staffContainer, geometry) {
       (m) => m.staveIndex === staveIndex && m.step === step && Math.abs(m.nativeX - nativeX) <= geometry.spaceHeight
     );
     if (existingIndex !== -1) {
+      if (!toggle) return;
       const [removed] = placed.splice(existingIndex, 1);
       removed.el.remove();
       removed.ledgerEl?.remove();

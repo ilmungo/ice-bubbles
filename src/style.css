@@ -14,6 +14,7 @@ body {
 
 #staff {
   position: relative;
+  z-index: 2;
 }
 
 #staff svg {
@@ -23,11 +24,13 @@ body {
 }
 
 .controls {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 4.5rem;
 }
 
 #play-pause,
@@ -61,7 +64,7 @@ body {
 #image-overlay-layer {
   position: fixed;
   inset: 0;
-  z-index: 5;
+  z-index: 1;
   pointer-events: none;
 }
 

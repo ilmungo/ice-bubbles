@@ -15,6 +15,7 @@ body {
 #staff {
   position: relative;
   z-index: 2;
+  pointer-events: none;
 }
 
 #staff svg {
@@ -118,6 +119,30 @@ body {
   height: 2px;
   background: #fff;
   transform: translate(-50%, -50%);
+}
+
+.stave-mute-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.stave-mute-tint {
+  position: absolute;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.15s ease;
+}
+
+.stave-mute-tint.is-muted {
+  background: rgba(80, 80, 80, 0.4);
+}
+
+.stave-mute-hitzone {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .scrubber-layer {

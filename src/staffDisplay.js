@@ -66,6 +66,8 @@ function staveGeometry(stave, clef) {
   return {
     xStart: stave.getX() * SCALE,
     xEnd: (stave.getX() + stave.getWidth()) * SCALE,
+    clefXStart: stave.getX() * SCALE,
+    clefXEnd: stave.getNoteStartX() * SCALE,
     yTop: yForStep(MAX_STEP),
     yBottom: yForStep(MIN_STEP),
     yForStep,

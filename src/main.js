@@ -3,6 +3,7 @@ import { renderStaves } from './staffDisplay.js';
 import { setupImageOverlay } from './imageOverlay.js';
 import { attachNoteMarkers } from './noteMarkers.js';
 import { attachScrubber } from './scrubber.js';
+import { attachStaveMute } from './staveMute.js';
 import { play, pause, isPlaying, setDuration, durationForSpeedValue } from './playback.js';
 import { detectBubbles } from './bubbleDetector.js';
 
@@ -26,6 +27,7 @@ const staffEl = document.querySelector('#staff');
 const geometry = renderStaves(staffEl);
 const { placeMarkerAtPoint, getNotes, clearAutoNotes } = attachNoteMarkers(staffEl, geometry);
 const setScrubberFraction = attachScrubber(staffEl, geometry);
+const { isMuted } = attachStaveMute(staffEl, geometry);
 
 const { getImage } = setupImageOverlay(document.querySelector('#image-input'), { onTap: placeMarkerAtPoint });
 
@@ -79,6 +81,7 @@ playButton.addEventListener('click', () => {
 
   playButton.textContent = 'Pause';
   play(notes, {
+    isMuted,
     onProgress: setScrubberFraction,
     onDone: () => {
       playButton.textContent = 'Play';

@@ -43,7 +43,7 @@ export function isPlaying() {
 // Completion is likewise detected from the same rAF loop that drives the
 // scrubber, rather than a Transport-scheduled callback stopping the
 // Transport from inside its own clock.
-export function play(notes, { onProgress, onDone, onError } = {}) {
+export function play(notes, { onProgress, onDone, onError, isMuted } = {}) {
   (async () => {
     try {
       await Tone.start();
@@ -51,6 +51,7 @@ export function play(notes, { onProgress, onDone, onError } = {}) {
       if (needsRebuild) {
         part?.dispose();
         part = new Tone.Part((time, note) => {
+          if (isMuted?.(note.staveIndex)) return;
           synthFor(note.staveIndex).triggerAttackRelease(note.toneNote, '8n', time);
         }, notes.map((note) => [note.time * durationSeconds, note])).start(0);
         needsRebuild = false;

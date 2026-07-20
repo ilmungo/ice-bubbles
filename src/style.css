@@ -1,0 +1,120 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: #0f1b2b;
+  color: #eef4fb;
+}
+
+.app {
+  padding: 2rem 1.5rem 3rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+h1 {
+  margin-bottom: 0.25rem;
+}
+
+.hint {
+  color: #9db3c8;
+  margin-top: 0;
+  max-width: 60ch;
+}
+
+.palette {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.palette-image {
+  width: 56px;
+  height: 56px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: #16273b;
+  cursor: pointer;
+}
+
+.palette-image.selected {
+  border-color: #4fc3f7;
+  background: #1c3350;
+}
+
+.staff-wrap {
+  position: relative;
+  background: #f7f4ec;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.staff {
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.slot-guide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(15, 27, 43, 0.08);
+  pointer-events: none;
+}
+
+.placed-image {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  transition: transform 0.1s ease;
+}
+
+.placed-image.active {
+  transform: translate(-50%, -50%) scale(1.35);
+}
+
+.controls {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+button {
+  font: inherit;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  background: #4fc3f7;
+  color: #04263b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button#clear {
+  background: transparent;
+  color: #eef4fb;
+  border: 1px solid #33506b;
+}

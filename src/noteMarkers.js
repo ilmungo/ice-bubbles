@@ -13,8 +13,10 @@ export function attachNoteMarkers(staffContainer, geometry) {
 
   // `toggle: true` (manual taps) removes an already-placed bubble at the
   // same snapped spot; `toggle: false` (auto-detection) leaves it alone so
-  // detection never undoes a note that's already there.
-  function placeMarkerAtPoint(clientX, clientY, { toggle = true } = {}) {
+  // detection never undoes a note that's already there. `source` tags who
+  // placed it, so a later detection pass can clear out its own previous
+  // results (to reflect a new sensitivity) without touching manual notes.
+  function placeMarkerAtPoint(clientX, clientY, { toggle = true, source = 'manual' } = {}) {
     const box = contentBox(staffContainer, geometry);
     const nativeX = (clientX - box.contentLeft) / box.scale;
     const nativeY = (clientY - box.contentTop) / box.scale;
@@ -60,14 +62,23 @@ export function attachNoteMarkers(staffContainer, geometry) {
       layer.appendChild(ledger);
     }
 
-    placed.push({ nativeX, staveIndex, step, el: marker, ledgerEl: ledger });
+    placed.push({ nativeX, staveIndex, step, source, el: marker, ledgerEl: ledger });
   }
 
   function getNotes() {
     return placed.map(({ nativeX, staveIndex, step }) => ({ nativeX, staveIndex, step }));
   }
 
-  return { placeMarkerAtPoint, getNotes };
+  function clearAutoNotes() {
+    for (let i = placed.length - 1; i >= 0; i -= 1) {
+      if (placed[i].source !== 'auto') continue;
+      placed[i].el.remove();
+      placed[i].ledgerEl?.remove();
+      placed.splice(i, 1);
+    }
+  }
+
+  return { placeMarkerAtPoint, getNotes, clearAutoNotes };
 }
 
 // The SVG's default `preserveAspectRatio="xMidYMid meet"` can letterbox

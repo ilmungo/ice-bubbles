@@ -8,14 +8,18 @@
 // whose surroundings are meaningfully brighter than their interior — that
 // last check is what separates actual bubbles from other dark patches
 // (cracks, shadows) that happen to pass the shape test.
+//
+// `sensitivity` (0-100, default 50) trades false negatives for false
+// positives: higher values shift the dark/light split to catch fainter
+// centers and relax the contrast/shape checks, for images where bubbles
+// are hard to tell from the surrounding ice; lower values tighten
+// everything back up.
 const DOWNSCALE_MAX_DIM = 500;
-const MIN_AREA_FRACTION = 0.00015;
 const MAX_AREA_FRACTION = 0.2;
-const MAX_ASPECT_RATIO = 1.8;
-const MIN_FILL_RATIO = 0.45;
-const MIN_RING_CONTRAST = 12;
 
-export function detectBubbles(imgElement) {
+export function detectBubbles(imgElement, sensitivity = 50) {
+  const params = paramsForSensitivity(sensitivity);
+
   const scale = Math.min(1, DOWNSCALE_MAX_DIM / Math.max(imgElement.naturalWidth, imgElement.naturalHeight));
   const width = Math.max(1, Math.round(imgElement.naturalWidth * scale));
   const height = Math.max(1, Math.round(imgElement.naturalHeight * scale));
@@ -28,16 +32,27 @@ export function detectBubbles(imgElement) {
   const { data } = ctx.getImageData(0, 0, width, height);
 
   const gray = toGrayscale(data, width, height);
-  const threshold = otsuThreshold(gray);
+  const threshold = Math.min(255, Math.max(0, otsuThreshold(gray) + params.thresholdBias));
   const blobs = findDarkBlobs(gray, width, height, threshold);
 
   const imageArea = width * height;
   const bubbles = [];
   for (const blob of blobs) {
-    const center = evaluateBlob(blob, gray, width, height, imageArea);
+    const center = evaluateBlob(blob, gray, width, height, imageArea, params);
     if (center) bubbles.push({ x: center.x / scale, y: center.y / scale });
   }
   return bubbles;
+}
+
+function paramsForSensitivity(sensitivity) {
+  const t = Math.min(100, Math.max(0, sensitivity)) / 100; // 0 (strict) .. 1 (permissive)
+  return {
+    thresholdBias: (t - 0.5) * 60, // -30 .. +30 brightness units
+    minRingContrast: 24 - t * 20, // 24 .. 4
+    minFillRatio: 0.6 - t * 0.3, // 0.6 .. 0.3
+    maxAspectRatio: 1.5 + t * 1.2, // 1.5 .. 2.7
+    minAreaFraction: 0.00015 * (1 - t * 0.6), // shrinks so smaller bubbles qualify
+  };
 }
 
 function toGrayscale(data, width, height) {
@@ -123,16 +138,16 @@ function findDarkBlobs(gray, width, height, threshold) {
   return blobs;
 }
 
-function evaluateBlob(blob, gray, width, height, imageArea) {
-  if (blob.count < imageArea * MIN_AREA_FRACTION || blob.count > imageArea * MAX_AREA_FRACTION) return null;
+function evaluateBlob(blob, gray, width, height, imageArea, params) {
+  if (blob.count < imageArea * params.minAreaFraction || blob.count > imageArea * MAX_AREA_FRACTION) return null;
 
   const w = blob.maxX - blob.minX + 1;
   const h = blob.maxY - blob.minY + 1;
   const aspect = w > h ? w / h : h / w;
-  if (aspect > MAX_ASPECT_RATIO) return null;
+  if (aspect > params.maxAspectRatio) return null;
 
   const fillRatio = blob.count / (w * h);
-  if (fillRatio < MIN_FILL_RATIO) return null;
+  if (fillRatio < params.minFillRatio) return null;
 
   const cx = blob.sumX / blob.count;
   const cy = blob.sumY / blob.count;
@@ -140,7 +155,7 @@ function evaluateBlob(blob, gray, width, height, imageArea) {
 
   const innerAvg = sampleAnnulus(gray, width, height, cx, cy, 0, radius * 0.8);
   const outerAvg = sampleAnnulus(gray, width, height, cx, cy, radius * 1.1, radius * 1.8);
-  if (innerAvg === null || outerAvg === null || outerAvg - innerAvg < MIN_RING_CONTRAST) return null;
+  if (innerAvg === null || outerAvg === null || outerAvg - innerAvg < params.minRingContrast) return null;
 
   return { x: cx, y: cy };
 }

@@ -11,6 +11,8 @@ export default [
         window: 'readonly',
         console: 'readonly',
         FileReader: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
       },
     },
   },

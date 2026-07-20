@@ -22,9 +22,20 @@ body {
   height: auto;
 }
 
-#image-input {
-  display: block;
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+#play-pause {
+  font: inherit;
+  padding: 0.4rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #33506b;
+  background: #f2e8d5;
+  cursor: pointer;
 }
 
 #image-overlay-layer {
@@ -84,4 +95,21 @@ body {
   height: 2px;
   background: #fff;
   transform: translate(-50%, -50%);
+}
+
+.scrubber-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.scrubber-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
 }

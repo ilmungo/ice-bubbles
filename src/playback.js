@@ -27,32 +27,40 @@ export function isPlaying() {
 // Completion is likewise detected from the same rAF loop that drives the
 // scrubber, rather than a Transport-scheduled callback stopping the
 // Transport from inside its own clock.
-export function play(notes, { onProgress, onDone } = {}) {
+export function play(notes, { onProgress, onDone, onError } = {}) {
   (async () => {
-    await Tone.start();
+    try {
+      await Tone.start();
 
-    if (needsRebuild) {
-      part?.dispose();
-      part = new Tone.Part((time, note) => {
-        synthFor(note.staveIndex).triggerAttackRelease(note.toneNote, '8n', time);
-      }, notes.map((note) => [note.time * DURATION_SECONDS, note])).start(0);
-      needsRebuild = false;
-    }
-
-    Tone.Transport.start();
-
-    function tick() {
-      const fraction = Tone.Transport.seconds / DURATION_SECONDS;
-      if (fraction >= 1) {
-        stop();
-        onDone?.();
-        return;
+      if (needsRebuild) {
+        part?.dispose();
+        part = new Tone.Part((time, note) => {
+          synthFor(note.staveIndex).triggerAttackRelease(note.toneNote, '8n', time);
+        }, notes.map((note) => [note.time * DURATION_SECONDS, note])).start(0);
+        needsRebuild = false;
       }
-      onProgress?.(fraction);
-      if (isPlaying()) rafId = requestAnimationFrame(tick);
+
+      Tone.Transport.start();
+
+      function tick() {
+        const fraction = Tone.Transport.seconds / DURATION_SECONDS;
+        if (fraction >= 1) {
+          stop();
+          onDone?.();
+          return;
+        }
+        onProgress?.(fraction);
+        if (isPlaying()) rafId = requestAnimationFrame(tick);
+      }
+      tick();
+    } catch (err) {
+      onError?.(err);
     }
-    tick();
   })();
+}
+
+export function audioContextState() {
+  return Tone.getContext().state;
 }
 
 export function pause() {

@@ -13,6 +13,7 @@ export default [
         FileReader: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
+        setTimeout: 'readonly',
       },
     },
   },

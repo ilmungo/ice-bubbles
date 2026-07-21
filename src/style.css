@@ -29,21 +29,33 @@ body {
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
   margin-top: 4.5rem;
   max-width: 700px;
 }
 
+.controls-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 #play-pause,
-#detect-bubbles {
+#detect-bubbles,
+.file-label {
   font: inherit;
   padding: 0.4rem 1.25rem;
   border-radius: 8px;
   border: 1px solid #33506b;
   background: #f2e8d5;
   cursor: pointer;
+}
+
+#play-pause {
+  min-width: 5.5rem;
+  text-align: center;
 }
 
 #status {
@@ -113,13 +125,13 @@ body {
   position: absolute;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 55%, rgba(255, 255, 255, 0) 100%);
+  background: radial-gradient(circle, rgba(255, 140, 0, 1) 0%, rgba(255, 140, 0, 1) 55%, rgba(255, 140, 0, 0) 100%);
 }
 
 .note-marker-ledger {
   position: absolute;
   height: 2px;
-  background: #fff;
+  background: #ff8c00;
   transform: translate(-50%, -50%);
 }
 

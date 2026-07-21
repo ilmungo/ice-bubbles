@@ -11,14 +11,19 @@ document.querySelector('#app').innerHTML = `
   <div class="app">
     <div id="staff"></div>
     <div class="controls">
-      <input type="file" id="image-input" accept="image/*" />
-      <button id="detect-bubbles" type="button">Detect Bubbles</button>
-      <label id="sensitivity-label" for="sensitivity">Sensitivity <span id="sensitivity-value">50</span></label>
-      <input type="range" id="sensitivity" min="0" max="100" value="50" />
-      <button id="play-pause" type="button">Play</button>
-      <label id="speed-label" for="speed">Speed</label>
-      <input type="range" id="speed" min="0" max="100" value="50" />
-      <span id="status"></span>
+      <div class="controls-row">
+        <label for="image-input" class="file-label">Choose Image</label>
+        <input type="file" id="image-input" accept="image/*" hidden />
+        <button id="detect-bubbles" type="button">Detect Bubbles</button>
+        <label id="sensitivity-label" for="sensitivity">Sensitivity <span id="sensitivity-value">50</span></label>
+        <input type="range" id="sensitivity" min="0" max="100" value="50" />
+      </div>
+      <div class="controls-row">
+        <button id="play-pause" type="button">Play</button>
+        <label id="speed-label" for="speed">Speed</label>
+        <input type="range" id="speed" min="0" max="100" value="50" />
+        <span id="status"></span>
+      </div>
     </div>
   </div>
 `;

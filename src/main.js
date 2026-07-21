@@ -17,12 +17,12 @@ document.querySelector('#app').innerHTML = `
         <button id="detect-bubbles" type="button">Detect Bubbles</button>
         <label id="sensitivity-label" for="sensitivity">Sensitivity <span id="sensitivity-value">50</span></label>
         <input type="range" id="sensitivity" min="0" max="100" value="50" />
+        <span id="status"></span>
       </div>
       <div class="controls-row">
         <button id="play-pause" type="button">Play</button>
         <label id="speed-label" for="speed">Speed</label>
         <input type="range" id="speed" min="0" max="100" value="50" />
-        <span id="status"></span>
       </div>
     </div>
   </div>
